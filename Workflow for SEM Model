@@ -1,0 +1,69 @@
+## Structural Equation Modeling of Flowering Rush
+## By Max Gebhart
+
+
+library(lavaan)
+library(DiagrammeR)
+library(lavaanPlot)
+
+setwd("C:/Users/maxge/Downloads/Grad School Papers/Data-Analysis/Revised Data")
+Frush <- read.csv("SEM for Frush.csv")
+froosh <- read.csv("new sem.csv")
+dat <- read.csv("https://stats.idre.ucla.edu/wp-content/uploads/2021/02/worland5.csv")
+
+
+# We only wants columns 5 through 17 since the first couple columns will be more for organization
+# A key for the organizational columns is separate of this file
+
+## We can get a variance-covariance matrix then transform it to a 
+## correlation matrix or go straight to a correlation matrix
+
+covar <- cov(Frush[,5:17], use = "complete.obs")
+cov2cor(covar)
+
+cor(Frush[,5:17], use = "complete.obs")
+
+cov(dat)
+
+
+## SEM is great for predicting the causation for certain traits
+## We aren't getting complicated my questions are simply:
+# Does EOY1 rhizome and rhizome bud data indicate BOY2 rhizome and above ground biomass?
+# And does Y1 rhizome and rhizome bud data indicate Y2 rhizome and above ground biomass?
+## Pretty similar questions but one is looking between months and the other is looking at cumulative influence
+## I'm hoping to get a physiological explanation between years essentially with what I have!
+# I'll put up pictures of my models in Github as well to illustrate my thinking path
+
+possiblemodel <- '
+      BGY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
+      AY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
+      BGY1 ~~ RBY1
+      BGY1 ~~ BSY1
+      BGY1 ~~ RBSY1
+      RBY1 ~~ BSY1
+      RBY1 ~~ RBSY1
+      BSY1 ~~ RBSY1
+'
+
+fitposmodel <- sem(possiblemodel, data=froosh)
+summary(fitposmodel, fit.measures=T)
+
+lavaanPlot(model = fitposmodel, node_options = list(shape = "box", fontname = "Arial", fontsize = 8, height = 0.25, width = 0.25), edge_options = list(color = "black", arrowsize = 0.5), coefs = T, cov = T, sig = 0.05)
+
+
+possiblemodel <- '
+      BGY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
+      AY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
+      BGY1 ~~ RBY1
+      BGY1 ~~ BSY1
+      BGY1 ~~ RBSY1
+      RBY1 ~~ BSY1
+      RBY1 ~~ RBSY1
+      BSY1 ~~ RBSY1
+'
+
+fitposmodel <- sem(possiblemodel, data = Frush)
+summary(fitposmodel, fit.measures=T)
+
+lavaanPlot(model = fitposmodel, node_options = list(shape = "box", fontname = "Arial", fontsize = 8, height = 0.25, width = 0.25), edge_options = list(color = "black", arrowsize = 0.5), coefs = T, cov = T, sig = 0.05)
+
