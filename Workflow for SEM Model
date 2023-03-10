@@ -1,7 +1,6 @@
 ## Structural Equation Modeling of Flowering Rush
 ## By Max Gebhart
 
-
 library(lavaan)
 library(DiagrammeR)
 library(lavaanPlot)
@@ -21,10 +20,9 @@ dat <- read.csv("https://stats.idre.ucla.edu/wp-content/uploads/2021/02/worland5
 covar <- cov(Frush[,5:17], use = "complete.obs")
 cov2cor(covar)
 
-cor(Frush[,5:17], use = "complete.obs")
+Frushcorrelations <- cor(Frush[,5:17], use = "complete.obs")
 
 cov(dat)
-
 
 ## SEM is great for predicting the causation for certain traits
 ## We aren't getting complicated my questions are simply:
@@ -35,8 +33,8 @@ cov(dat)
 # I'll put up pictures of my models in Github as well to illustrate my thinking path
 
 possiblemodel <- '
-      BGY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
-      AY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1
+      BGY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1 + ATY1
+      AY2 ~ 1 + BGY1 + RBY1 + BSY1 + RBSY1 +ATY1
       BGY1 ~~ RBY1
       BGY1 ~~ BSY1
       BGY1 ~~ RBSY1
@@ -46,9 +44,10 @@ possiblemodel <- '
 '
 
 fitposmodel <- sem(possiblemodel, data=froosh)
-summary(fitposmodel, fit.measures=T)
+ModelSummary <- summary(fitposmodel, fit.measures=T)
+labels_list <- list(BSY1 = 'Rhizome Starch Y1', RBSY1 = 'Rhizome Bud Starch Y1', BGY1 = "Rhizome Biomass Y1", RBY1 = "Rhizome Bud Biomass Y1", BGY2 = "Rhizome Biomass Y2", AY2 = "Aboveground Biomass Y2")
 
-lavaanPlot(model = fitposmodel, node_options = list(shape = "box", fontname = "Arial", fontsize = 8, height = 0.25, width = 0.25), edge_options = list(color = "black", arrowsize = 0.5), coefs = T, cov = T, sig = 0.05)
+lavaanPlot(model = fitposmodel, labels = labels_list, node_options = list(shape = "box", fontname = "Arial", fontsize = 8, height = 0.25, width = 0.25), edge_options = list(color = "black", arrowsize = 0.5))
 
 
 possiblemodel <- '
@@ -66,4 +65,3 @@ fitposmodel <- sem(possiblemodel, data = Frush)
 summary(fitposmodel, fit.measures=T)
 
 lavaanPlot(model = fitposmodel, node_options = list(shape = "box", fontname = "Arial", fontsize = 8, height = 0.25, width = 0.25), edge_options = list(color = "black", arrowsize = 0.5), coefs = T, cov = T, sig = 0.05)
-
